@@ -16,5 +16,8 @@
   "homepage": "https://github.com/jsoverson/jsconsole",
   "devDependencies": {
     "babel": "^5.0.12"
+  },
+  "dependencies": {
+    "waves-repl": "^2.0.0"
   }
 }

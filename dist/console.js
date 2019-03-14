@@ -1,15 +1,15 @@
 'use strict';
 
-var _classCallCheck = function (instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } };
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Console = (function () {
   var Console = (function () {
     function Console(element) {
       var _this = this;
 
-      var options = arguments[1] === undefined ? {} : arguments[1];
+      var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       _classCallCheck(this, Console);
 
@@ -61,11 +61,11 @@ var Console = (function () {
       };
 
       var inputKeymap = {
-        Up: up,
-        Down: down,
-        'Ctrl-C': cancel,
-        Enter: enter,
-        'Shift-Enter': shiftEnter
+        "Up": up,
+        "Down": down,
+        "Ctrl-C": cancel,
+        "Enter": enter,
+        "Shift-Enter": shiftEnter
       };
 
       var outputContainer = document.createElement('div');
@@ -111,10 +111,13 @@ var Console = (function () {
       this.output.on('keydown', function (cm, evt) {
         // if we start typing when the output is focused, send it to the input
         if (evt.metaKey || evt.ctrlKey) {
-          if (evt.which === 67) {} else if (evt.which === 86) {
-            // ^V
-            _this.input.triggerOnKeyDown(evt);
-          }
+          if (evt.which === 67) {// ^C
+            // don't need to do
+            // anything here yet.
+          } else if (evt.which === 86) {
+              // ^V
+              _this.input.triggerOnKeyDown(evt);
+            }
         } else {
           _this.input.triggerOnKeyDown(evt);
           _this.input.focus();
@@ -214,22 +217,22 @@ var Console = (function () {
         };
 
         switch (type) {
-          case 'string':
+          case "string":
             output.formatted = '"' + value + '"';
-            output['class'] = 'string';
+            output['class'] = "string";
             break;
-          case 'undefined':
-            output.formatted = 'undefined';
+          case "undefined":
+            output.formatted = "undefined";
             break;
-          case 'null':
-            output.formatted = 'null';
+          case "null":
+            output.formatted = "null";
             break;
-          case 'object':
-          case 'array':
+          case "object":
+          case "array":
             // Todo: pretty print object output
             output.formatted = JSON.stringify(value);
             break;
-          case 'error':
+          case "error":
             output.formatted = value.message.trim();
             break;
           default:
@@ -257,9 +260,8 @@ var Console = (function () {
 
         this.isEvaluating = true;
         var rv = this.evaluate(text);
-        if (!rv) {
-          return;
-        }this.isEvaluating = false;
+        if (!rv) return;
+        this.isEvaluating = false;
         var doc = this.input.getDoc();
 
         if (rv.error && !rv.recoverable) {
@@ -281,7 +283,7 @@ var Console = (function () {
     }, {
       key: 'resetInput',
       value: function resetInput() {
-        var text = arguments[0] === undefined ? '' : arguments[0];
+        var text = arguments.length <= 0 || arguments[0] === undefined ? '' : arguments[0];
 
         this.input.setValue(text.toString());
         this.input.execCommand('goDocEnd');
@@ -313,8 +315,8 @@ var Console = (function () {
     }, {
       key: 'print',
       value: function print(text) {
-        var className = arguments[1] === undefined ? 'message' : arguments[1];
-        var gutterMarker = arguments[2] === undefined ? document.createElement('span') : arguments[2];
+        var className = arguments.length <= 1 || arguments[1] === undefined ? 'message' : arguments[1];
+        var gutterMarker = arguments.length <= 2 || arguments[2] === undefined ? document.createElement('span') : arguments[2];
 
         var range = this.appendOutput(text);
         for (var i = range[0].line; i <= range[1].line; i++) {
@@ -323,10 +325,10 @@ var Console = (function () {
         }
         return range;
       }
-    }, {
-      key: 'simpleFormatter',
 
       // basic, dumb formatter for console.log style %X formatting
+    }, {
+      key: 'simpleFormatter',
       value: function simpleFormatter(msg) {
         for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
           args[_key - 1] = arguments[_key];
@@ -349,11 +351,7 @@ var Console = (function () {
 
         var origConsoleLog = console.log.bind(console);
         console.log = function () {
-          for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            args[_key2] = arguments[_key2];
-          }
-
-          _this4.logBuffer.push(_this4.simpleFormatter.apply(_this4, args));
+          _this4.logBuffer.push(_this4.simpleFormatter.apply(_this4, arguments));
           if (!_this4.isEvaluating) {
             _this4.flushLogBuffer();
           }
@@ -363,14 +361,14 @@ var Console = (function () {
     }, {
       key: 'setMode',
       value: function setMode(mode) {
-        this.input.setOption('mode', mode);
-        this.output.setOption('mode', mode);
+        this.input.setOption("mode", mode);
+        this.output.setOption("mode", mode);
       }
     }, {
       key: 'setTheme',
       value: function setTheme(theme) {
-        this.input.setOption('theme', theme);
-        this.output.setOption('theme', theme);
+        this.input.setOption("theme", theme);
+        this.output.setOption("theme", theme);
       }
     }]);
 
@@ -405,6 +403,3 @@ var Console = (function () {
 
   return Console;
 })();
-// ^C
-// don't need to do
-// anything here yet.

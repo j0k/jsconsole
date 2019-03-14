@@ -19,6 +19,7 @@
     "tests"
   ],
   "dependencies": {
-    "codemirror": "~5.1.0"
+    "codemirror": "~5.1.0",
+    "waves-repl": "^2.0.0"
   }
 }
