@@ -11,10 +11,12 @@
   <script src="./bower_components/codemirror/mode/javascript/javascript.js"></script>
   <!-- <script src="https://ide.wavesplatform.com/react.production.min.js"></script>
   <script src="https://ide.wavesplatform.com/react-dom.production.min.js"></script> -->
-  <script src="https://ide.wavesplatform.com/editor.bundle.js"></script>
-  <script src="https://ide.wavesplatform.com/ride.min.js"></script>
-  <script type="text/javascript" src="https://ide.wavesplatform.com/app.1f585991fb82080119ad.bundle.js?afb15ddcb42b32f349eb"></script>
+    <!-- <script src="https://ide.wavesplatform.com/editor.bundle.js"></script>
+    <script src="https://ide.wavesplatform.com/ride.min.js"></script>
+    <script type="text/javascript" src="https://ide.wavesplatform.com/app.1f585991fb82080119ad.bundle.js?afb15ddcb42b32f349eb"></script> -->
   <script src="./dist/console.js"></script>
+  <script src="./dist/bundle.js"></script>
+
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -59,7 +61,7 @@
     <div id="uiform">
       <div class="container">
         <h2 style="text-align:center">form</h2>
-        <form class="form-horizontal" action="javascript:alert('hep');">
+        <form class="form-horizontal" action="javascript:">
 
           <div class="form-group">
 
@@ -125,9 +127,20 @@
   <script src="index.js"></script>
   <script type="text/javascript">
     mta = document.getElementById("code-data");
+
+
+
     var myCodeMirror = CodeMirror(function(elt) {
       mta.parentNode.replaceChild(elt, mta);
     }, {value: mta.value});
+
+    mta.addEventListener('input', () => {
+      alert("yep!");
+    });
+
+    $('#gen-seed').on('click', function(){
+      $('#seed').val( seedUtils.generateNewSeed(15));
+    });
   </script>
 </body>
 

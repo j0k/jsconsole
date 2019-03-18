@@ -15,9 +15,12 @@
   "license": "MIT",
   "homepage": "https://github.com/jsoverson/jsconsole",
   "devDependencies": {
-    "babel": "^5.0.12"
+    "babel": "^5.0.12",
+    "webpack": "^4.29.6"
   },
   "dependencies": {
-    "waves-repl": "^2.0.0"
+    "typescript": "^3.3.3333",
+    "waves-repl": "^2.0.0",
+    "waves-transactions": "^3.0.13"
   }
 }
