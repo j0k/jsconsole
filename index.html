@@ -11,7 +11,7 @@
   <script src="./bower_components/codemirror/mode/javascript/javascript.js"></script>
   <!-- <script src="https://ide.wavesplatform.com/react.production.min.js"></script>
   <script src="https://ide.wavesplatform.com/react-dom.production.min.js"></script> -->
-    <!-- <script src="https://ide.wavesplatform.com/editor.bundle.js"></script>
+  <!-- <script src="https://ide.wavesplatform.com/editor.bundle.js"></script>
     <script src="https://ide.wavesplatform.com/ride.min.js"></script>
     <script type="text/javascript" src="https://ide.wavesplatform.com/app.1f585991fb82080119ad.bundle.js?afb15ddcb42b32f349eb"></script> -->
   <script src="./dist/console.js"></script>
@@ -19,6 +19,7 @@
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
   <style>
     html,
@@ -42,85 +43,103 @@
       width: 100%;
     }
 
-    #scroll-window  {
+    #scroll-window {
      height: 50%;
      width: 100%;
      overflow: scroll;
    }
 
+    #uiform {
+      height: 50%;
+      width: 100%;
+      overflow: scroll;
+    }
 
     #button {
       vertical-align: bottom;
+    }
+
+    .generated{
+      background: #eeefff;
+
+    }
+
+    .code-box {
+      border-style: dotted;
+      border-width: 2px;
     }
   </style>
 </head>
 
 <body>
+
   <div id="uiform">
-    <div id="uiform">
-      <div class="container">
-        <h2 style="text-align:center">form</h2>
-        <form class="form-horizontal" action="javascript:">
+    <div class="container">
+      <h2 style="text-align:center">form</h2>
+      <form class="form-horizontal" action="javascript:">
 
+        <div class="form-group">
+
+          <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+              <label><input type="checkbox" name="remember"> Remember me</label>
+            </div>
+          </div>
+        </div>
+        <div class="">
           <div class="form-group">
-
             <div class="col-sm-offset-2 col-sm-10">
-              <div class="checkbox">
-                <label><input type="checkbox" name="remember"> Remember me</label>
-              </div>
+              <button id="auth" type="submit" class="btn btn-default">Auth</button>
+              <button id="gen-seed" class="btn btn-default">Generate seed</button>
+              <button id="sign" class="btn btn-default">Sign</button>
+              <button id="check-sign" class="btn btn-default">Check Signature</button>
             </div>
           </div>
-          <div class="">
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-default">Auth</button>
-                <button id="gen-seed" class="btn btn-default">Generate seed</button>
-              </div>
-            </div>
-          </div>
+        </div>
 
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="address">addr:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="address" name="addr" disabled>
-            </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2 " for="address">addr:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control generated" id="address" name="addr" >
           </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="pubkey">public key:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="pubKey" name="pubkey" disabled>
-            </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2 " for="pubkey">public key:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control generated" id="pubKey" name="pubkey">
           </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="privKey">priv key:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="privKey" name="privKey" disabled>
-            </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="privKey">priv key:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control generated" id="privKey" name="privKey">
           </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="seed">Seed:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control" id="seed" placeholder="Enter seed" name="seed">
-            </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="seed">Seed:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="seed" placeholder="Enter seed" name="seed">
           </div>
-          <div class="form-group">
-            <label class="control-label col-sm-2" for="seed">Data:</label>
-            <div class="col-sm-10">
-              <textarea id="code-data" rows="8" cols="80">
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="seed">Data:</label>
+          <div class="col-sm-10 code-box">
+            <textarea id="code-data" rows="8" cols="80">
 {
   data : "data to sign"
 }
               </textarea>
-            </div>
           </div>
+        </div>
 
-        </form>
-      </div>
+      </form>
     </div>
   </div>
-  <div id="scroll-window">
+
+  <div id="scroll-window" class="resizable">
     <div id="console-container">
-      <div id="console"></div>
+      <div id="console">
+      </div>
     </div>
   </div>
   <script src="index.js"></script>
@@ -131,26 +150,28 @@
 
     var myCodeMirror = CodeMirror(function(elt) {
       mta.parentNode.replaceChild(elt, mta);
-    }, {value: mta.value});
+    }, {
+      value: mta.value
+    });
 
     mta.addEventListener('input', () => {
       alert("yep!");
     });
 
-    function setWalletBySeed(seed){
+    function setWalletBySeed(seed) {
       keys = wtrans.libs.crypto.keyPair(seed);
 
       var wallet = {
-        'address':'',
-        'pubKey':'',
-        'privKey':'',
-        'seed':''
+        'address': '',
+        'pubKey': '',
+        'privKey': '',
+        'seed': ''
       };
 
       wallet.address = wtrans.libs.crypto.address(seed);
-      wallet.pubKey  = keys.public;
+      wallet.pubKey = keys.public;
       wallet.privKey = keys.private;
-      wallet.seed    = seed;
+      wallet.seed = seed;
 
       $('#seed').val(wallet.seed);
       $('#pubKey').val(wallet.pubKey);
@@ -160,16 +181,15 @@
       return wallet;
     }
 
-    $('#seed').on('change', function(){
+    $('#seed').on('change', function() {
       seed = $('#seed').val()
       setWalletBySeed(seed);
     });
 
-    $('#gen-seed').on('click', function(){
+    $('#gen-seed').on('click', function() {
       seed = wtrans.seedUtils.generateNewSeed(15);
       setWalletBySeed(seed);
     });
-
   </script>
 </body>
 
