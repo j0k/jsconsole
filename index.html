@@ -96,10 +96,10 @@
         <div class="">
           <div class="form-group">
             <div class="col-sm-offset-2 col-sm-10">
-              <button id="auth" type="submit" class="btn btn-default">Auth</button>
-              <button id="gen-seed" class="btn btn-default">Generate seed</button>
+              <button id="btn-gen-seed" class="btn btn-default">Generate seed</button>
               <button id="btn-sign" class="btn btn-default" alt="sign(data, seed)">Sign</button>
               <button id="btn-verify-sign" class="btn btn-default" alt="verifySign(pubKey, data, sign)">Check Signature</button>
+              <button id="btn-waves-keep-auth" type="submit" class="btn btn-default">WavesKeeper Auth</button>
             </div>
           </div>
         </div>
@@ -145,7 +145,7 @@
           <div class="col-sm-10 code-box">
             <textarea id="code-data" style="code-box" rows="8" cols="80">
 {
-  data : "data to sign"
+  "data" : "json to sign"
 }
               </textarea>
           </div>
@@ -184,8 +184,10 @@
       'privKey': '',
       'seed': '',
       'sign': '',
-      'verifySign': ''
+      'verifySign': '',
     };
+
+    var keeper_auth;
 
     function setWalletBySeed(seed) {
       keys = wtrans.libs.crypto.keyPair(seed);
@@ -208,7 +210,14 @@
       setWalletBySeed(seed);
     });
 
-    $('#gen-seed').on('click', function() {
+
+    $('#btn-waves-keep-auth').on('click', function() {
+      data        = myCodeMirror.getValue();
+      json_data   = JSON.parse(data);
+      keeper_auth = WavesKeeper.auth(json_data);
+    });
+
+    $('#btn-gen-seed').on('click', function() {
       seed = wtrans.seedUtils.generateNewSeed(15);
       setWalletBySeed(seed);
     });
