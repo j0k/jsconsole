@@ -59,9 +59,16 @@
       vertical-align: bottom;
     }
 
+    .data-box {
+      width: 100px;
+    }
+
     .generated{
       background: #eeefff;
+    }
 
+    .generated-sign{
+      background: #ffefee;
     }
 
     .code-box {
@@ -91,8 +98,8 @@
             <div class="col-sm-offset-2 col-sm-10">
               <button id="auth" type="submit" class="btn btn-default">Auth</button>
               <button id="gen-seed" class="btn btn-default">Generate seed</button>
-              <button id="sign" class="btn btn-default">Sign</button>
-              <button id="check-sign" class="btn btn-default">Check Signature</button>
+              <button id="btn-sign" class="btn btn-default" alt="sign(data, seed)">Sign</button>
+              <button id="btn-verify-sign" class="btn btn-default" alt="verifySign(pubKey, data, sign)">Check Signature</button>
             </div>
           </div>
         </div>
@@ -118,13 +125,25 @@
         <div class="form-group">
           <label class="control-label col-sm-2" for="seed">Seed:</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" id="seed" placeholder="Enter seed" name="seed">
+            <input type="text" class="form-control" id="seed" placeholder="Enter seed. Use ENTER to apply seed and generate keys." name="seed">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="sign">Signature:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control generated-sign" id="sign" name="sign">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="verify-sign">Check signature:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control generated-sign" id="verify-sign" name="verify-sign" disabled>
           </div>
         </div>
         <div class="form-group">
           <label class="control-label col-sm-2" for="seed">Data:</label>
           <div class="col-sm-10 code-box">
-            <textarea id="code-data" rows="8" cols="80">
+            <textarea id="code-data" style="code-box" rows="8" cols="80">
 {
   data : "data to sign"
 }
@@ -145,28 +164,31 @@
   <script src="index.js"></script>
   <script type="text/javascript">
     var wtrans = waves_transactions;
+    var waves_crypto = wtrans.libs.crypto;
 
     mta = document.getElementById("code-data");
 
     var myCodeMirror = CodeMirror(function(elt) {
       mta.parentNode.replaceChild(elt, mta);
     }, {
-      value: mta.value
+      value: mta.value,
     });
 
     mta.addEventListener('input', () => {
       alert("yep!");
     });
 
+    var wallet = {
+      'address': '',
+      'pubKey': '',
+      'privKey': '',
+      'seed': '',
+      'sign': '',
+      'verifySign': ''
+    };
+
     function setWalletBySeed(seed) {
       keys = wtrans.libs.crypto.keyPair(seed);
-
-      var wallet = {
-        'address': '',
-        'pubKey': '',
-        'privKey': '',
-        'seed': ''
-      };
 
       wallet.address = wtrans.libs.crypto.address(seed);
       wallet.pubKey = keys.public;
@@ -189,6 +211,23 @@
     $('#gen-seed').on('click', function() {
       seed = wtrans.seedUtils.generateNewSeed(15);
       setWalletBySeed(seed);
+    });
+
+    $('#btn-sign').on('click', function() {
+      data = myCodeMirror.getValue();
+      uint8bytes  = waves_crypto.stringToUint8Array(data)
+      //wallet.sign = waves_crypto.signBytes(uint8bytes, wallet.seed);
+      wallet.sign = waves_crypto.signWithPrivateKey(uint8bytes, wallet.privKey)
+      $('#sign').val(wallet.sign);
+    });
+
+    $('#btn-verify-sign').on('click', function() {
+      data        = myCodeMirror.getValue();
+      uint8bytes  = waves_crypto.stringToUint8Array(data);
+
+      wallet.sign = $('#sign').val();
+      wallet.verifySign = waves_crypto.verifySignature(wallet.pubKey, uint8bytes, wallet.sign);
+      $('#verify-sign').val(wallet.verifySign);
     });
   </script>
 </body>
