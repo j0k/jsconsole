@@ -71,16 +71,21 @@
       background: #ffefee;
     }
 
+    .marked{
+      background: #ffaaaa;
+    }
+
     .code-box {
       border-style: dotted;
       border-width: 2px;
     }
+
   </style>
 </head>
 
 <body>
 
-  <div id="uiform">
+  <div id="uiform" class="ui-widget-content">
     <div class="container">
       <h2 style="text-align:center">form</h2>
       <form class="form-horizontal" action="javascript:">
@@ -111,25 +116,25 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="control-label col-sm-2 " for="pubkey">public key:</label>
+          <label class="control-label col-sm-2 for-btn-verify-sign" for="pubkey">public key:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control generated" id="pubKey" name="pubkey">
           </div>
         </div>
         <div class="form-group">
-          <label class="control-label col-sm-2" for="privKey">priv key:</label>
+          <label class="control-label col-sm-2 for-btn-sign" for="privKey">priv key:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control generated" id="privKey" name="privKey">
           </div>
         </div>
         <div class="form-group">
-          <label class="control-label col-sm-2" for="seed">Seed:</label>
+          <label class="control-label col-sm-2 for-btn-gen-seed" for="seed">Seed:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="seed" placeholder="Enter seed. Use ENTER to apply seed and generate keys." name="seed">
           </div>
         </div>
         <div class="form-group">
-          <label class="control-label col-sm-2" for="sign">Signature:</label>
+          <label class="control-label col-sm-2 for-btn-verify-sign" for="sign">Signature:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control generated-sign" id="sign" name="sign">
           </div>
@@ -141,7 +146,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label class="control-label col-sm-2" for="seed">Data:</label>
+          <label class="control-label col-sm-2 for-btn-sign for-btn-verify-sign for-btn-waves-keep-auth" for="seed">Data:</label>
           <div class="col-sm-10 code-box">
             <textarea id="code-data" style="code-box" rows="8" cols="80">
 {
@@ -151,11 +156,18 @@
           </div>
         </div>
 
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="seed">Keeper data:</label>
+          <div class="col-sm-10 code-box">
+            <textarea id="code-keeper" style="code-box" rows="8" cols="80">
+              </textarea>
+          </div>
+        </div>
       </form>
     </div>
   </div>
 
-  <div id="scroll-window" class="resizable">
+  <div id="scroll-window" class="resizable for_verifySign">
     <div id="console-container">
       <div id="console">
       </div>
@@ -174,6 +186,15 @@
       value: mta.value,
     });
 
+    code_keeper = document.getElementById("code-keeper");
+    var myKeeperMirror = CodeMirror(function(elt) {
+      code_keeper.parentNode.replaceChild(elt, code_keeper);
+    }, {
+      value: code_keeper.value,
+    });
+
+
+
     mta.addEventListener('input', () => {
       alert("yep!");
     });
@@ -187,7 +208,7 @@
       'verifySign': '',
     };
 
-    var keeper_auth;
+    var keeper_auth = {promise:"", keeper:""};
 
     function setWalletBySeed(seed) {
       keys = wtrans.libs.crypto.keyPair(seed);
@@ -207,37 +228,87 @@
 
     $('#seed').on('change', function() {
       seed = $('#seed').val()
+      wallet.seed = seed;
       setWalletBySeed(seed);
+    });
+
+    $('#pubKey').on('change',function(){
+      wallet.pubKey = $('#pubKey').val();
+    });
+
+    $('#privKey').on('change',function(){
+      wallet.privKey = $('#privKey').val();
     });
 
 
     $('#btn-waves-keep-auth').on('click', function() {
       data        = myCodeMirror.getValue();
       json_data   = JSON.parse(data);
-      keeper_auth = WavesKeeper.auth(json_data);
+      keeper_auth.promise = WavesKeeper.auth(json_data);
+
+      keeper_auth.promise.then( auth => {
+        var fine_json = JSON.stringify(auth, null, 2);
+        myKeeperMirror.setValue(fine_json);
+      }).catch( error => {
+        myKeeperMirror.setValue(JSON.stringify(error));
+      });
     });
 
     $('#btn-gen-seed').on('click', function() {
       seed = wtrans.seedUtils.generateNewSeed(15);
       setWalletBySeed(seed);
+      console.log("setWalletBySeed( wtrans.seedUtils.generateNewSeed(15) );");
     });
 
     $('#btn-sign').on('click', function() {
-      data = myCodeMirror.getValue();
-      uint8bytes  = waves_crypto.stringToUint8Array(data)
-      //wallet.sign = waves_crypto.signBytes(uint8bytes, wallet.seed);
-      wallet.sign = waves_crypto.signWithPrivateKey(uint8bytes, wallet.privKey)
+      //wallet.sign = waves_crypto.signBytes(data2uint8(), wallet.seed);
+      wallet.sign = waves_crypto.signWithPrivateKey(data2uint8(), wallet.privKey)
+      console.log("waves_crypto.signWithPrivateKey(data2uint8(), wallet.privKey);");
       $('#sign').val(wallet.sign);
     });
 
+    function data2uint8(){
+      data       = myCodeMirror.getValue();
+      uint8bytes = waves_crypto.stringToUint8Array(data);
+      return uint8bytes;
+    }
+
     $('#btn-verify-sign').on('click', function() {
-      data        = myCodeMirror.getValue();
-      uint8bytes  = waves_crypto.stringToUint8Array(data);
+      wallet.pubKey = $('#pubKey').val();
 
       wallet.sign = $('#sign').val();
-      wallet.verifySign = waves_crypto.verifySignature(wallet.pubKey, uint8bytes, wallet.sign);
+      wallet.verifySign = waves_crypto.verifySignature(wallet.pubKey, data2uint8(), wallet.sign);
+
+      console.log("waves_crypto.verifySignature(wallet.pubKey, data2uint8(), wallet.sign);");
       $('#verify-sign').val(wallet.verifySign);
     });
+
+    $("#btn-verify-sign").hover( function(){
+      // in
+      $(".for-btn-verify-sign").addClass("marked");
+    }, function(){
+      // out
+      $(".for-btn-verify-sign").removeClass("marked");
+    } );
+
+    $("#btn-sign").hover( ()=>{
+      $(".for-btn-sign").addClass("marked");
+    }, () =>{
+      $(".for-btn-sign").removeClass("marked");
+    } );
+
+    $("#btn-gen-seed").hover( ()=>{
+      $(".for-btn-gen-seed").addClass("marked");
+    }, () =>{
+      $(".for-btn-gen-seed").removeClass("marked");
+    } );
+
+    $("#btn-waves-keep-auth").hover( ()=>{
+      $(".for-btn-waves-keep-auth").addClass("marked");
+    }, () =>{
+      $(".for-btn-waves-keep-auth").removeClass("marked");
+    } );
+
   </script>
 </body>
 
