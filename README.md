@@ -11,6 +11,6 @@ How to use - [video](https://youtu.be/K-k0eYHbmqk).
 ## Dependencies
 
 CodeMirror : ~5.1.x
-
+@waves/waves-transactions : ~3.3.x
 
 [dataFill]:  pics/auth.jpg "Web page screen"
