@@ -81,15 +81,15 @@
           </div>
 
           <div class="form-group">
-            <label class="control-label col-sm-2" for="addr">addr:</label>
+            <label class="control-label col-sm-2" for="address">addr:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="addr" name="addr" disabled>
+              <input type="text" class="form-control" id="address" name="addr" disabled>
             </div>
           </div>
           <div class="form-group">
             <label class="control-label col-sm-2" for="pubkey">public key:</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="pubkey" name="pubkey" disabled>
+              <input type="text" class="form-control" id="pubKey" name="pubkey" disabled>
             </div>
           </div>
           <div class="form-group">
@@ -126,9 +126,9 @@
   </div>
   <script src="index.js"></script>
   <script type="text/javascript">
+    var wtrans = waves_transactions;
+
     mta = document.getElementById("code-data");
-
-
 
     var myCodeMirror = CodeMirror(function(elt) {
       mta.parentNode.replaceChild(elt, mta);
@@ -138,9 +138,39 @@
       alert("yep!");
     });
 
-    $('#gen-seed').on('click', function(){
-      $('#seed').val( seedUtils.generateNewSeed(15));
+    function setWalletBySeed(seed){
+      keys = wtrans.libs.crypto.keyPair(seed);
+
+      var wallet = {
+        'address':'',
+        'pubKey':'',
+        'privKey':'',
+        'seed':''
+      };
+
+      wallet.address = wtrans.libs.crypto.address(seed);
+      wallet.pubKey  = keys.public;
+      wallet.privKey = keys.private;
+      wallet.seed    = seed;
+
+      $('#seed').val(wallet.seed);
+      $('#pubKey').val(wallet.pubKey);
+      $('#privKey').val(wallet.privKey);
+      $('#address').val(wallet.address);
+
+      return wallet;
+    }
+
+    $('#seed').on('change', function(){
+      seed = $('#seed').val()
+      setWalletBySeed(seed);
     });
+
+    $('#gen-seed').on('click', function(){
+      seed = wtrans.seedUtils.generateNewSeed(15);
+      setWalletBySeed(seed);
+    });
+
   </script>
 </body>
 
