@@ -6,11 +6,14 @@ Extensible repl based on CodeMirror. Defaults to evaluating JavaScript in the pa
 
 How to use - [video](https://youtu.be/K-k0eYHbmqk).
 
+[Now try it](http://j0k.github.io)
+
 ![alt text][dataFill]
 
 ## Dependencies
 
 CodeMirror : ~5.1.x
+
 @waves/waves-transactions : ~3.3.x
 
 [dataFill]:  pics/auth.jpg "Web page screen"
