@@ -6,7 +6,7 @@ Extensible repl based on CodeMirror. Defaults to evaluating JavaScript in the pa
 
 How to use - [video](https://youtu.be/K-k0eYHbmqk).
 
-[Now try it](http://j0k.github.io)
+[Now try it](http://j0k.github.io/wallet2console)
 
 ![alt text][dataFill]
 
