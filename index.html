@@ -108,10 +108,24 @@
             <div class="col-sm-offset-2 col-sm-10">
               <button id="btn-gen-new-seed" class="btn btn-outline-secondary">New seed</button>
               <button id="btn-gen-seed" class="btn btn-outline-secondary">Generate keys</button>
+              <button id="btn-gen-addr" class="btn btn-outline-secondary">Generate addr</button>
               <button id="btn-sign" class="btn btn-outline-secondary" alt="sign(data, seed)">Sign</button>
               <button id="btn-verify-sign" class="btn btn-outline-secondary" alt="verifySign(pubKey, data, sign)">Check Signature</button>
               <button id="btn-waves-keep-auth" type="submit" class="btn btn-outline-secondary">WavesKeeper Auth</button>
             </div>
+          </div>
+        </div>
+
+        <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+          <div class="btn-group mr-2" role="group" aria-label="First group">
+            <button type="button" class="btn btn-secondary" onclick="$('#netType').val('W'); genAddr();">WorkNet</button>
+            <button type="button" class="btn btn-secondary" onclick="$('#netType').val('T'); genAddr();">TestNet</button>
+          </div>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text" id="btnGroupAddon">net:</div>
+            </div>
+            <input id="netType" type="text" class="form-control" aria-describedby="btnGroupAddon" value="W" disabled>
           </div>
         </div>
 
@@ -140,7 +154,7 @@
 
         <div class="form-group input-group">
           <div class="input-group-prepend">
-            <span class="input-group-text for-btn-verify-sign" for="pubkey">public key:</span>
+            <span class="input-group-text for-btn-verify-sign for-btn-gen-addr" for="pubkey">public key:</span>
           </div>
           <input type="text" class="form-control generated" id="pubKey" name="pubkey">
           <div class="input-group-append">
@@ -252,8 +266,8 @@
   </div>
   <script src="index.js"></script>
   <script type="text/javascript">
-    var wtrans = waves_transactions;
-    var waves_crypto = wtrans.libs.crypto;
+    var WT = waves_transactions;
+    var waves_crypto = WT.libs.crypto;
 
     mta = document.getElementById("code-data");
 
@@ -283,6 +297,7 @@
       'seed': '',
       'sign': '',
       'verifySign': '',
+      'netType':'W'
     };
 
     var keeper_auth = {
@@ -291,11 +306,14 @@
     };
 
     function setWalletBySeed(seed) {
-      keys = wtrans.libs.crypto.keyPair(seed);
+      var keys = WT.libs.crypto.keyPair(seed);
 
-      wallet.address = wtrans.libs.crypto.address(seed);
+      wallet.nettype = $('#netType').val();
       wallet.pubKey = keys.public;
       wallet.privKey = keys.private;
+
+      var PKBytes = WT.libs.crypto.base58decode(wallet.pubKey)
+      wallet.address = WT.libs.crypto.buildAddress(PKBytes, wallet.nettype);      
       wallet.seed = seed;
 
       $('#seed').val(wallet.seed);
@@ -305,6 +323,18 @@
 
       return wallet;
     }
+
+    function genAddr(){
+      wallet.nettype = $('#netType').val();
+      wallet.pubKey  = $('#pubKey').val();
+      var PKBytes = WT.libs.crypto.base58decode(wallet.pubKey)
+      wallet.address = WT.libs.crypto.buildAddress(PKBytes, wallet.nettype);
+      $('#address').val(wallet.address);
+    }
+
+    $('#pubKey').on('change', function(){
+      genAddr();
+    });
 
     $('#seed').on('change', function() {
       seed = $('#seed').val()
@@ -335,9 +365,9 @@
     });
 
     $('#btn-gen-new-seed').on('click', function() {
-      seed = wtrans.seedUtils.generateNewSeed(15);
+      seed = WT.seedUtils.generateNewSeed(15);
       setWalletBySeed(seed);
-      console.log("setWalletBySeed( wtrans.seedUtils.generateNewSeed(15) );");
+      console.log("setWalletBySeed( WT.seedUtils.generateNewSeed(15) );");
     });
     $('#btn-gen-seed').on('click', function() {
       seed = $('#seed').val()
@@ -368,31 +398,19 @@
       $('#verify-sign').val(wallet.verifySign);
     });
 
-    $("#btn-verify-sign").hover(function() {
-      // in
-      $(".for-btn-verify-sign").addClass("marked");
-    }, function() {
-      // out
-      $(".for-btn-verify-sign").removeClass("marked");
-    });
+    function hoverMarked(cls, prefix="for-", mask="marked"){
+      $("#"+cls).hover(() => {
+        $("."+prefix+cls).addClass("marked");
+      }, () => {
+        $("."+prefix+cls).removeClass("marked");
+      });
+    }
 
-    $("#btn-sign").hover(() => {
-      $(".for-btn-sign").addClass("marked");
-    }, () => {
-      $(".for-btn-sign").removeClass("marked");
-    });
-
-    $("#btn-gen-seed").hover(() => {
-      $(".for-btn-gen-seed").addClass("marked");
-    }, () => {
-      $(".for-btn-gen-seed").removeClass("marked");
-    });
-
-    $("#btn-waves-keep-auth").hover(() => {
-      $(".for-btn-waves-keep-auth").addClass("marked");
-    }, () => {
-      $(".for-btn-waves-keep-auth").removeClass("marked");
-    });
+    hoverMarked("btn-verify-sign")
+    hoverMarked("btn-sign");
+    hoverMarked("btn-gen-seed");
+    hoverMarked("btn-gen-addr");
+    hoverMarked("btn-waves-keep-auth");
   </script>
 </body>
 
