@@ -118,7 +118,7 @@
 
         <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
           <div class="btn-group mr-2" role="group" aria-label="First group">
-            <button type="button" class="btn btn-secondary" onclick="$('#netType').val('W'); genAddr();">WorkNet</button>
+            <button type="button" class="btn btn-secondary" onclick="$('#netType').val('W'); genAddr();">MainNet</button>
             <button type="button" class="btn btn-secondary" onclick="$('#netType').val('T'); genAddr();">TestNet</button>
           </div>
           <div class="input-group">
@@ -313,7 +313,7 @@
       wallet.privKey = keys.private;
 
       var PKBytes = WT.libs.crypto.base58decode(wallet.pubKey)
-      wallet.address = WT.libs.crypto.buildAddress(PKBytes, wallet.nettype);      
+      wallet.address = WT.libs.crypto.buildAddress(PKBytes, wallet.nettype);
       wallet.seed = seed;
 
       $('#seed').val(wallet.seed);
