@@ -94,7 +94,6 @@
       <form class="form-horizontal" action="javascript:">
 
         <div class="form-group">
-
           <div class="col-sm-offset-2 col-sm-10">
             <div class="checkbox">
               <label><input type="checkbox" name="remember"> Remember me</label>
@@ -112,6 +111,7 @@
               <button id="btn-sign" class="btn btn-outline-secondary" alt="sign(data, seed)">Sign</button>
               <button id="btn-verify-sign" class="btn btn-outline-secondary" alt="verifySign(pubKey, data, sign)">Check Signature</button>
               <button id="btn-waves-keep-auth" type="submit" class="btn btn-outline-secondary">WavesKeeper Auth</button>
+              <button id="btn-waves-keep-signpub" type="submit" class="btn btn-outline-secondary">WK Sign&Publish</button>
             </div>
           </div>
         </div>
@@ -228,9 +228,20 @@
           </div>
           <div class="code-box" >
             <textarea id="code-data" >
-    {
-    "data" : "json to sign"
-    }
+              {
+                         "type": 4,
+                         "data": {
+                             "amount": {
+                                "assetId": "WAVES",
+                                "tokens": "1.00"
+                             },
+                             "fee": {
+                                 "assetId": "WAVES",
+                                 "tokens": "0.001"
+                             },
+                             "recipient": "3MuFKZW7iyQpycu4gBqswbPoPxZG8usXnvC"
+                         }
+              }
             </textarea>
           </div>
         </div>
@@ -355,6 +366,19 @@
       data = myCodeMirror.getValue();
       json_data = JSON.parse(data);
       keeper_auth.promise = WavesKeeper.auth(json_data);
+
+      keeper_auth.promise.then(auth => {
+        var fine_json = JSON.stringify(auth, null, 2);
+        myKeeperMirror.setValue(fine_json);
+      }).catch(error => {
+        myKeeperMirror.setValue(JSON.stringify(error));
+      });
+    });
+
+    $('#btn-waves-keep-signpub').on('click', function() {
+      data = myCodeMirror.getValue();
+      json_data = JSON.parse(data);
+      keeper_auth.promise = WavesKeeper.signAndPublishTransaction(json_data);
 
       keeper_auth.promise.then(auth => {
         var fine_json = JSON.stringify(auth, null, 2);
